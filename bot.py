@@ -4,7 +4,9 @@ import re
 import pytesseract
 import numpy as np
 import cv2
+
 # For Railway deployment
+WEBHOOK_URL = "web-production-1266.up.railway.app"
 PORT = int(os.environ.get('PORT', 8443))
 
 from dotenv import load_dotenv
@@ -247,7 +249,13 @@ async def help_command(update: Update, context: CallbackContext):
         "2. I'll process it and return the extracted text\n\n"
         "For best results, use clear images with readable text."
     )
-
+    
+async def set_webhook(app):
+    await app.bot.set_webhook(
+        url=f"https://{WEBHOOK_URL}/{BOT_TOKEN}",
+        allowed_updates=Update.ALL_TYPES
+    )
+    
 def main():
     if not BOT_TOKEN:
         logger.error("TELEGRAM_BOT_TOKEN is not set!")
@@ -270,7 +278,9 @@ def main():
                 listen="0.0.0.0",
                 port=PORT,
                 url_path=BOT_TOKEN,
-                webhook_url=f"https://{os.environ['RAILWAY_STATIC_URL']}.railway.app/{BOT_TOKEN}"
+                webhook_url=f"https://{WEBHOOK_URL}/{BOT_TOKEN}",
+                secret_token='WEBHOOK_SECRET'  # إضافة اختيارية للأمان
+
             )
         else:  # للتشغيل المحلي
             app.run_polling()

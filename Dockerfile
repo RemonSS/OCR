@@ -8,6 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-eng \
+    tesseract-ocr-ara \
     libtesseract-dev \
     && rm -rf /var/lib/apt/lists/* \
     && find /usr/share/tesseract-ocr/ -type f

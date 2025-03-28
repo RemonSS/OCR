@@ -1,0 +1,7 @@
+python-telegram-bot==20.3
+pytesseract==0.3.10
+opencv-python==4.8.1.78
+pillow==10.0.1
+python-dotenv==1.0.0
+numpy==1.24.4
+python-bidi==0.4.2

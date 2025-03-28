@@ -1,10 +1,9 @@
 # 📸 Telegram Image-to-Text OCR Bot
 
+This is a **Telegram Bot** that extracts text from images using **pytesseract** (Tesseract OCR) and the **Python Telegram API**. Users can send an image to the bot, and it will respond with the extracted text from the image.
 
 ## ⚠️ IMPORTANT
 **IT'S FOR SAUDI ARABIA TO EXTRACT IBAN & NAME**
-
-This is a **Telegram Bot** that extracts text from images using **pytesseract** (Tesseract OCR) and the **Python Telegram API**. Users can send an image to the bot, and it will respond with the extracted text from the image.
 
 ## ✨ Features
 - **Image-to-text conversion**: Use `pytesseract` to convert images into text.

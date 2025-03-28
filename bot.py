@@ -35,50 +35,86 @@ class OCR:
         self.path = self.find_tesseract_path()
         self.tessdata_dir = self.find_tessdata_dir()
         
-        if self.tessdata_dir:
-            os.environ['TESSDATA_PREFIX'] = self.tessdata_dir
+        # تحسين إعداد متغيرات البيئة
+        self.setup_tesseract_env()
+        
+        # التحقق من تثبيت اللغة العربية
+        self.check_arabic_language()
     
+    def setup_tesseract_env(self):
+        """إعداد متغيرات بيئة Tesseract مع طبقات حماية إضافية"""
+        # استخدام المسار الموجود أو المسار الافتراضي لـ Railway
+        os.environ['TESSDATA_PREFIX'] = (
+            self.tessdata_dir 
+            or os.getenv('TESSDATA_PREFIX') 
+            or '/usr/share/tesseract-ocr/5/tessdata'
+        )
+        
+        # تأكيد مسار Tesseract
+        pytesseract.tesseract_cmd = self.path or '/usr/bin/tesseract'
+        
+        logger.info(f"Using Tesseract path: {pytesseract.tesseract_cmd}")
+        logger.info(f"Using TESSDATA_PREFIX: {os.environ['TESSDATA_PREFIX']}")
+
+    def check_arabic_language(self):
+        """التحقق من وجود اللغة العربية"""
+        try:
+            langs = pytesseract.get_languages(config='')
+            logger.info(f"Available languages: {langs}")
+            if 'ara' not in langs:
+                logger.error("Arabic language pack not installed!")
+        except Exception as e:
+            logger.error(f"Error checking Tesseract languages: {e}")
+
     def find_tesseract_path(self):
+        """البحث عن مسار Tesseract مع إضافة مسارات Railway"""
         paths = [
-            '/usr/bin/tesseract',  
-            '/usr/local/bin/tesseract',  
+            '/usr/bin/tesseract',  # المسار الأساسي على Railway/Linux
+            '/usr/local/bin/tesseract',
+            '/app/bin/tesseract',  # مسار إضافي للاحتياط
             'C:\\Program Files\\Tesseract-OCR\\tesseract.exe',  
-            'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'  
+            'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'
         ]
         
+        # البحث في المسارات المحددة
         for path in paths:
-            if os.path.exists(path):
+            if path and os.path.exists(path):
                 return path
         
+        # البحث في PATH النظام
         from shutil import which
         path = which('tesseract')
         if path:
             return path
-        
-        raise Exception("Tesseract not found. Please install Tesseract-OCR and add it to your PATH")
+            
+        raise Exception("Tesseract not found. Please install Tesseract-OCR")
 
     def find_tessdata_dir(self):
+        """البحث عن مجلد tessdata مع إضافة مسارات Railway"""
         dirs = [
-            '/usr/share/tesseract-ocr/5/tessdata',  
-            '/usr/local/share/tessdata',  
-            'C:\\Program Files\\Tesseract-OCR\\tessdata',  
-            'C:\\Program Files (x86)\\Tesseract-OCR\\tessdata'  
+            '/usr/share/tesseract-ocr/5/tessdata',  # المسار الشائع على Railway
+            '/usr/share/tesseract-ocr/4.00/tessdata',
+            '/usr/local/share/tessdata',
+            '/app/tessdata',  # مسار مخصص إذا أضفت الملفات يدوياً
+            'C:\\Program Files\\Tesseract-OCR\\tessdata'
         ]
         
+        # إضافة مسار من متغير البيئة إذا كان موجوداً
+        env_path = os.getenv('TESSDATA_PREFIX')
+        if env_path:
+            dirs.insert(0, env_path)
+            
         for dir_path in dirs:
-            if os.path.exists(dir_path):
-                return dir_path
+            if dir_path and os.path.exists(dir_path):
+                # التحقق من وجود ملف اللغة العربية
+                arabic_path = os.path.join(dir_path, 'ara.traineddata')
+                if os.path.exists(arabic_path):
+                    return dir_path
+                else:
+                    logger.warning(f"Found tessdata dir but missing Arabic language: {dir_path}")
+        
+        logger.error("No valid tessdata directory found with Arabic language pack")
         return None
-
-    def extract(self, filename, lang='eng+ara'):
-        try:
-            pytesseract.tesseract_cmd = self.path
-            img = Image.open(filename)
-            text = pytesseract.image_to_string(img, lang=lang)
-            return text
-        except Exception as e:
-            logger.error(f"Error in extract method: {e}")
-            return "Error occurred while extracting text"
         
 def enhance_arabic_text(image_path):
     """

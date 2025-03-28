@@ -254,8 +254,8 @@ async def handle_image(update: Update, context: CallbackContext):
                 
         # إنشاء الأزرار لنسخ الاسم والآيبان
         keyboard = [
-            [InlineKeyboardButton("📋 COPY NAME", callback_data="copy_name")],
-            [InlineKeyboardButton("📋 COPY OBAN", callback_data="copy_iban")]
+            [InlineKeyboardButton("📋 NAME", callback_data="copy_name")],
+            [InlineKeyboardButton("📋 IBAN", callback_data="copy_iban")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 

@@ -116,7 +116,26 @@ class OCR:
         logger.error("No valid tessdata directory found with Arabic language pack")
         return None
         
-def enhance_arabic_text(image_path):
+    def extract(self, filename, lang='eng+ara'):
+        """
+        استخراج النص من الصورة باستخدام Tesseract OCR
+        """
+        try:
+            pytesseract.tesseract_cmd = self.path
+            if self.tessdata_dir:
+                os.environ['TESSDATA_PREFIX'] = self.tessdata_dir
+            img = Image.open(filename)
+
+            if 'ara' in lang:
+                img = self.enhance_arabic_text(img)
+            text = pytesseract.image_to_string(img, lang=lang)
+            return text
+
+        except Exception as e:
+            logger.error(f"Error in OCR extraction: {e}")
+            return None
+
+def enhance_arabic_text(self, img):
     """
     دالة متقدمة لتحسين جودة الصور للنصوص العربية
     تحسينات رئيسية:
@@ -125,13 +144,12 @@ def enhance_arabic_text(image_path):
     - تحسين خاص للخطوط العربية الدقيقة
     """
     try:
-        # 1. تحميل الصورة مع الاحتفاظ بالقنوات اللونية للاستفادة منها لاحقًا
-        image = cv2.imread(image_path)
-        if image is None:
-            raise ValueError("تعذر تحميل الصورة من المسار المحدد")
+        # تحويل الصورة إلى OpenCV format
+        open_cv_image = np.array(img)
+        open_cv_image = cv2.cvtColor(open_cv_image, cv2.COLOR_RGB2BGR)
         
         # 2. تحويل إلى تدرج الرمادي مع الاحتفاظ بنسخة ملونة
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
         
         # 3. معالجة مسبقة باستخدام CLAHE لتحسين التباين المحلي
         clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
@@ -187,7 +205,7 @@ async def handle_image(update: Update, context: CallbackContext):
             return
 
         # استخراج النص باللغة الإنجليزية لاستخراج رقم الآيبان
-        text_eng = ocr.extract(file_path, lang="eng")
+        text_eng = pytesseract.image_to_string(Image.open(file_path), lang="eng")
         iban_match = re.search(r'\b[A-Z]{2}\d{2} ?(?:\d{4} ?){3,7}\d{1,4}\b', text_eng)
 
         iban = iban_match.group(0).replace(" ", "") if iban_match else "لم يتم العثور على رقم IBAN"

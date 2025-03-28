@@ -254,8 +254,8 @@ async def handle_image(update: Update, context: CallbackContext):
                 
         # إنشاء الأزرار لنسخ الاسم والآيبان
         keyboard = [
-            [InlineKeyboardButton("📋 نسخ الاسم", callback_data="copy_name")],
-            [InlineKeyboardButton("📋 نسخ الايبان", callback_data="copy_iban")]
+            [InlineKeyboardButton("📋 COPY NAME", callback_data="copy_name")],
+            [InlineKeyboardButton("📋 COPY OBAN", callback_data="copy_iban")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -287,21 +287,40 @@ async def button_handler(update: Update, context: CallbackContext):
     else:
         text_to_copy = "خطأ غير معروف"
 
-    await query.message.reply_text(f"تم النسخ: `{text_to_copy}`", parse_mode="Markdown")
+    await query.message.reply_text(f"CLICK TO COPY: `{text_to_copy}`", parse_mode="Markdown")
 
 
 async def start(update: Update, context: CallbackContext):
     await update.message.reply_text(
-        "Welcome to the Text Extractor Bot!\n\n"
-        "Send me an image containing text and I'll extract it for you."
+        "✨ *مرحبًا بك في بوت استخراج النصوص من الصور!* ✨\n\n"
+        "🖼️ *كيفية الاستخدام:*\n"
+        "ما عليك سوى إرسال صورة تحتوي على نص وسأقوم باستخراجه لك تلقائيًا\n\n"
+        "🔍 *يدعم البوت حاليًا:*\n"
+        "- النصوص العربية والإنجليزية\n"
+        "- استخراج أرقام الآيبان من الصور\n"
+        "- استخراج الأسماء من المستندات\n\n"
+        "📌 للحصول على مساعدة إضافية، اكتب /help",
+        parse_mode="Markdown"
     )
 
 async def help_command(update: Update, context: CallbackContext):
     await update.message.reply_text(
-        "How to use this bot:\n\n"
-        "1. Send me an image containing text\n"
-        "2. I'll process it and return the extracted text\n\n"
-        "For best results, use clear images with readable text."
+        "🆘 *دليل استخدام البوت* 🆘\n\n"
+        "📸 *للاستخدام الأمثل:*\n"
+        "1. التقط صورة واضحة للنص\n"
+        "2. تجنب الصور المائلة أو الضبابية\n"
+        "3. تأكد من إضاءة جيدة عند التصوير\n\n"
+        "💡 *نصائح مهمة:*\n"
+        "- يمكنك إرسال صور: \n"
+        "   • الفواتير\n"
+        "   • بطاقات العمل\n"
+        "   • المستندات الشخصية\n"
+        "   • النصوص المطبوعة\n\n"
+        "⚙️ *الأوامر المتاحة:*\n"
+        "/start - عرض رسالة الترحيب\n"
+        "/help - عرض هذه التعليمات\n\n"
+        "🛠️ عند مواجهة أي مشكلة، لا تتردد في التواصل مع الدعم",
+        parse_mode="Markdown"
     )
     
 async def set_webhook(app):

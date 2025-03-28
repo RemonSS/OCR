@@ -250,12 +250,13 @@ async def help_command(update: Update, context: CallbackContext):
 
 def main():
     if not BOT_TOKEN:
-        logger.error("TELEGRAM_BOT_TOKEN is not set. Please set it as an environment variable.")
+        logger.error("TELEGRAM_BOT_TOKEN is not set!")
         return
-    
+
     try:
         app = ApplicationBuilder().token(BOT_TOKEN).build()
-            
+        
+        # إضافة handlers
         app.add_handler(CommandHandler("start", start))
         app.add_handler(CommandHandler("help", help_command))
         app.add_handler(MessageHandler(filters.PHOTO, handle_image))
@@ -263,16 +264,19 @@ def main():
         
         logger.info("Bot is starting...")
         
-        # For Railway deployment
-        app.run_webhook(
-            listen="0.0.0.0",
-            port=PORT,
-            url_path=BOT_TOKEN,
-            webhook_url=f"https://{os.environ.get('RAILWAY_STATIC_URL')}.railway.app/{BOT_TOKEN}"
-        )
-        
+        # حل شامل يعمل على Railway والأنظمة الأخرى
+        if 'RAILWAY_STATIC_URL' in os.environ:  # إذا كان على Railway
+            app.run_webhook(
+                listen="0.0.0.0",
+                port=PORT,
+                url_path=BOT_TOKEN,
+                webhook_url=f"https://{os.environ['RAILWAY_STATIC_URL']}.railway.app/{BOT_TOKEN}"
+            )
+        else:  # للتشغيل المحلي
+            app.run_polling()
+            
     except Exception as e:
-        logger.error(f"Failed to start bot: {e}", exc_info=True)
+        logger.error(f"Failed to start bot: {e}")
 
 if __name__ == '__main__':
     main()

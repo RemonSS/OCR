@@ -1,5 +1,7 @@
 # 📸 Telegram Image-to-Text OCR Bot
 
+**IT'S FOR SAUDI ARABIA TO EXTRACT IBAN $ NAME**
+
 This is a **Telegram Bot** that extracts text from images using **pytesseract** (Tesseract OCR) and the **Python Telegram API**. Users can send an image to the bot, and it will respond with the extracted text from the image.
 
 ## ✨ Features
@@ -13,8 +15,8 @@ Follow these steps to set up and run the bot locally.
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/XredaX/Xtract-Text
-cd Xtract-Text
+git clone https://github.com/RemonSS/OCR
+cd OCR
 ```
 
 ### 2. Install dependencies
